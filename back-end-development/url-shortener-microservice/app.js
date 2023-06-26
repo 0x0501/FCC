@@ -13,5 +13,5 @@ app.use(express.static(resolve(__dirname, 'public')));
 
 
 app.listen(process.env['EXPRESS_PORT'], () => {
-    console.log(`Express is listening on ${port}`);
+    console.log(`Express is listening on ${process.env['EXPRESS_PORT']}`);
 })
