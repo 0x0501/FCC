@@ -15,9 +15,10 @@ app.get('/api/:date', (req, res) => {
         unix : 1, // unix milliseconds
         utc : "" // utc string
     };
+    res.setHeader("Access-Control-Allow-Origin", "*");
     const incoming_date = /^[0-9]+$/.test(req.params.date) ? Number(req.params.date) : req.params.date;
     const ms = new Date(incoming_date);
-    if (Number.isNaN(ms)) {
+    if (Number.isNaN(ms.getTime())) {
         res.json({
             error : "Invalid Date"
         })
@@ -27,6 +28,8 @@ app.get('/api/:date', (req, res) => {
         res.json(RESULT);
     }
 });
+
+app.get('/', express.static(resolve(__dirname, 'public')));
 
 app.listen(port, () => {
     console.log(`Express is listening on ${port}`);
