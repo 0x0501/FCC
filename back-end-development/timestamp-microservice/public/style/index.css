@@ -1,0 +1,21 @@
+body {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#root p {
+    text-align: left;
+}
+
+code {
+    background-color: #d5d5d5;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
