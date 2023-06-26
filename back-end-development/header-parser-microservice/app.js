@@ -13,6 +13,18 @@ const app = express();
 
 app.use(express.static(resolve(__dirname, "public")));
 
+app.get('/api/whoami', (req, res) => {
+    // set CORS header
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
+    res.json({
+        // get client address via net.socket
+        ipaddress : req.socket.remoteAddress,
+        language : req.headers["accept-language"],
+        software : req.headers["user-agent"]
+    });
+})
+
 console.log(process.env["EXPRESS_PORT"]);
 app.listen(process.env.EXPRESS_PORT, () => {
 	console.log(`Express is listening on ${process.env.EXPRESS_PORT}`);
