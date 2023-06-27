@@ -7,6 +7,9 @@ form.addEventListener("submit", env => {
 	const url = new FormData(env.target).get("url");
 	fetch("/api/shorturl/", {
 		method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
 		body: JSON.stringify({
             url : url
         })
