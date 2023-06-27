@@ -1,3 +1,7 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
 body {
 	margin: 0 auto;
 }
@@ -43,9 +47,31 @@ body {
 
 .responseArea {
 	margin-top: 10px;
-	background-color: #91caff;
+	background-color: #e6f4ff;
     text-align: left;
-	color: #fff;
+	color: #000;
+}
+
+.dialog {
+    background-color: #ffccc7;
+    margin: 0 auto;
+    text-align: left;
+    position: relative;
+    top: -500px;
+    transition: 0.5s all;
+}
+
+.dialog p {
+    margin: 5px 0;
+}
+
+.dialog.show {
+    top: -200px;
+}
+
+
+.hidden {
+    display: none;
 }
 
 form {
@@ -81,4 +107,9 @@ label input:focus {
 input {
 	min-height: 30px;
 	margin: 5px 0;
+}
+
+a {
+    text-decoration: none;
+    color:#4096ff;
 }
