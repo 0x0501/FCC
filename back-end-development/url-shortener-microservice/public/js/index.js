@@ -46,16 +46,16 @@ const SuccessPanel = (() => {
 		 */
 		if (responseArea.children.length === 0) {
 			elementWrapper = document.createElement("p");
-			elementWrapper.innerText = "The short url is: ";
-
 			elementShortLink = document.createElement("a");
-			elementShortLink.href = `${document.URL}api/shorturl/${response.short_url}`;
-			elementShortLink.innerText = `${document.URL}api/shorturl/${response.short_url}`;
-			elementShortLink.target = "_blank";
 		} else {
 			elementWrapper = document.querySelector(".responseArea.view p");
 			elementShortLink = document.querySelector(".responseArea.view a");
 		}
+
+		elementWrapper.innerText = "The short url is: ";
+		elementShortLink.href = `${document.URL}api/shorturl/${response.short_url}`;
+		elementShortLink.innerText = `${document.URL}api/shorturl/${response.short_url}`;
+		elementShortLink.target = "_blank";
 
 		elementWrapper.appendChild(elementShortLink);
 		responseArea.appendChild(elementWrapper);
