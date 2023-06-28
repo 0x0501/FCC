@@ -5,6 +5,7 @@ import { dirname, resolve } from "path";
 import { lookup } from "dns";
 import DB from "./Database.js";
 import { URLSchema, URLStruct } from "./schema/URLSchema.js";
+import { exit } from "process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,7 +29,7 @@ app.post("/api/shorturl/", (req, res, next) => {
 		//if no error occurs, pass by
 		next();
 	} catch (e) {
-		console.log("MID");
+		console.log("Middleware intercepted...");
 		res.json({ error: "invalid url" });
 	}
 });
@@ -51,14 +52,28 @@ app.post("/api/shorturl/", (req, res) => {
 		if (isUrlExist === null) {
 			console.log("Do not exist, creating one: " + receivedURL);
 
+			const createIdentity = async () => {
+				const identities = await URL.find().sort('shorter_identity');
+				const identities_num_only = identities.map(record => record.shorter_identity);
+
+				// no records found, create the first one from 1
+				if (identities_num_only.length === 0) {
+					return 1;
+				}else {
+					// find the largest number and then add 1 into it.
+					return identities_num_only[identities_num_only.length - 1] + 1;
+				}
+			}
 			const urlInstance = new URL({
 				original_url: receivedURL,
-				shorter_identity: 102,
+				shorter_identity: await createIdentity(),
 			});
 
 			returnedData = await urlInstance.save();
+
+			console.log(returnedData)
 		} else {
-			console.log("Already exist, return data");
+			console.log(`${receivedURL} Already exist, return data`);
 			returnedData = isUrlExist;
 		}
 		res.json({
