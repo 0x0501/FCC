@@ -5,7 +5,6 @@ import { dirname, resolve } from "path";
 import { lookup } from "dns";
 import DB from "./Database.js";
 import { URLSchema, URLStruct } from "./schema/URLSchema.js";
-import { exit } from "process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,18 +19,33 @@ app.use(express.urlencoded({ extended: true })); // parsing application/x-www-fo
 app.post("/api/shorturl/", (req, res, next) => {
 	const receivedURL = req.body.url ?? "";
 
-	try {
-		const urlBuilder = new URL(receivedURL);
-		lookup(urlBuilder.hostname, err => {
-			if (err) throw new Error(err);
-		});
-
+	new Promise((resolve, reject) => {
+		try {
+			/**
+			 * try-catch block is for URL constructors.
+			 * If we pass invalid url to URL constructor, we will get an error.
+			 */
+			const urlBuilder = new URL(receivedURL);
+			// lookup uses callback rather than Promise, so we simply wrap it.
+			lookup(urlBuilder.hostname, err => {
+				if (err) {
+					reject(err);
+				}else {
+					resolve();
+				}
+			});
+		} catch (e) {
+			reject(e);
+		}
+	}).then(() => {
 		//if no error occurs, pass by
 		next();
-	} catch (e) {
+	}).catch(_err => {
 		console.log("Middleware intercepted...");
 		res.json({ error: "invalid url" });
-	}
+	})
+
+	
 });
 
 // generator short url
