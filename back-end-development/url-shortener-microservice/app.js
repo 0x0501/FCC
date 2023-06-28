@@ -11,6 +11,12 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+// global middleware for CORS, this must be the first middleware
+app.use((req, res, next) => {
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	next();
+})
+
 app.use(express.static(resolve(__dirname, "public")));
 app.use(express.json()); // parsing application/json
 app.use(express.urlencoded({ extended: true })); // parsing application/x-www-form-urlencoded
