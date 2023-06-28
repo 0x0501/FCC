@@ -15,56 +15,62 @@ app.use(express.static(resolve(__dirname, "public")));
 app.use(express.json()); // parsing application/json
 app.use(express.urlencoded({ extended: true })); // parsing application/x-www-form-urlencoded
 
-// generator short url
-app.post("/api/shorturl/", (req, res) => {
+// POST middleware
+app.post("/api/shorturl/", (req, res, next) => {
 	const receivedURL = req.body.url ?? "";
 
 	try {
 		const urlBuilder = new URL(receivedURL);
-
 		lookup(urlBuilder.hostname, err => {
-			if (err) {
-				res.json({ error: "invalid url" });
-			} else {
-				DB.then(async instance => {
-					const URL = instance.model("URL", URLSchema);
-
-					// if the url doesn't exist in database
-					const isUrlExist = await URL.findOne({
-						original_url: receivedURL,
-					});
-
-					/**@type {URLStruct} */
-					let returnedData;
-
-					if (isUrlExist === null) {
-						console.log("Do not exist, creating one: " + receivedURL);
-
-						const urlInstance = new URL({
-							original_url: receivedURL,
-							shorter_identity: 0x1,
-						});
-
-						returnedData = await urlInstance.save();
-					} else {
-						console.log("Already exist, return data");
-						returnedData = isUrlExist;
-					}
-					res.json({
-						original_url: receivedURL,
-						short_url: returnedData.shorter_identity,
-					});
-				}).catch(err => {
-					console.log(`DB Error: ${err}`);
-					res.json({
-						error: "internal Error 500",
-					});
-				});
-			}
+			if (err) throw new Error(err);
 		});
-	} catch (err) {
+
+		//if no error occurs, pass by
+		next();
+	} catch (e) {
+		console.log("MID");
 		res.json({ error: "invalid url" });
 	}
+});
+
+// generator short url
+app.post("/api/shorturl/", (req, res) => {
+	const receivedURL = req.body.url ?? "";
+
+	DB.then(async instance => {
+		const URL = instance.model("URL", URLSchema);
+
+		// if the url doesn't exist in database
+		const isUrlExist = await URL.findOne({
+			original_url: receivedURL,
+		});
+
+		/**@type {URLStruct} */
+		let returnedData;
+
+		if (isUrlExist === null) {
+			console.log("Do not exist, creating one: " + receivedURL);
+
+			const urlInstance = new URL({
+				original_url: receivedURL,
+				shorter_identity: 102,
+			});
+
+			returnedData = await urlInstance.save();
+		} else {
+			console.log("Already exist, return data");
+			returnedData = isUrlExist;
+		}
+		res.json({
+			original_url: receivedURL,
+			short_url: returnedData.shorter_identity,
+		});
+	}).catch(err => {
+		console.log(`DB Error: ${err}`);
+		res.json({
+			error: "internal Error 500",
+		});
+	});
 });
 
 // intercept request
