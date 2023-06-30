@@ -13,8 +13,15 @@ const LogStruct = {};
 
 const LogSchema = Schema({
 	username: String,
-	count: Number,
 	log: [LogInfoSchema],
+}, {
+	virtuals: {
+		count : {
+			get() {
+				return this.log.length
+			}
+		}
+	}
 });
 
 export { LogStruct, LogSchema };
