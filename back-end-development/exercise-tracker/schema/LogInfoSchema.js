@@ -4,6 +4,7 @@ import { Schema } from "mongoose";
  * @property {string} description
  * @property {number} duration
  * @property {string} date
+ * @property {string} _id
  */
 
 /**@type {LogInfoStruct} */

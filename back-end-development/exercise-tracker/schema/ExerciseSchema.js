@@ -11,12 +11,5 @@ import { Schema } from "mongoose";
 /**@type {ExerciseStruct} */
 const ExerciseStruct = {};
 
-/**@type {Schema<ExerciseStruct>} */
-const ExerciseSchema = Schema({
-	username: String,
-	description: String,
-	duration: Number,
-	date : String
-});
 
-export { ExerciseStruct, ExerciseSchema };
+export { ExerciseStruct };

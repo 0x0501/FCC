@@ -4,9 +4,8 @@ import express from "express";
 import "dotenv/config";
 import DB from "./Database.js";
 import { UserSchema, UserStruct } from "./schema/UserSchema.js";
-import { ExerciseSchema, ExerciseStruct } from "./schema/ExerciseSchema.js";
+import { ExerciseStruct } from "./schema/ExerciseSchema.js";
 import { LogSchema } from "./schema/LogSchema.js";
-import { LogInfoSchema, LogInfoStruct } from "./schema/LogInfoSchema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,7 +13,7 @@ const __dirname = dirname(__filename);
 const app = express();
 
 // middleware for CORS request
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	next();
 });
@@ -96,29 +95,31 @@ app.post("/api/users/:id/exercises", (req, res) => {
 
 				let isExistInLog = await Log.findOne({ username: data.username });
 
-                /**@type {ExerciseStruct}*/
-                let result = {
-                    username : data.username,
-                    _id : data._id.toString(),
-                };
+				/**@type {ExerciseStruct}*/
+				let result = {
+					username: data.username,
+					_id: data._id.toString(),
+				};
 
-                if (isExistInLog === null) {
-                    const LogInstance = new Log({
-                        username : data.username,
-                        log : [exerciseMsg]
-                    });
-                    isExistInLog = await LogInstance.save();
-                }else {
-                    // add this exercise to the array
-                    isExistInLog.log.push(exerciseMsg);
-                }
-                const actionResult = await isExistInLog.save();
+				if (isExistInLog === null) {
+					const LogInstance = new Log({
+						username: data.username,
+						log: [exerciseMsg],
+					});
+					isExistInLog = await LogInstance.save();
+				} else {
+					// add this exercise to the array
+					isExistInLog.log.push(exerciseMsg);
+				}
+				const actionResult = await isExistInLog.save();
 
-                result.duration = actionResult.log[actionResult.log.length - 1].duration;
-                result.description = actionResult.log[actionResult.log.length - 1].description;
-                result.date = actionResult.log[actionResult.log.length - 1].date;
+				result.duration =
+					actionResult.log[actionResult.log.length - 1].duration;
+				result.description =
+					actionResult.log[actionResult.log.length - 1].description;
+				result.date = actionResult.log[actionResult.log.length - 1].date;
 
-                res.json(result);
+				res.json(result);
 			})
 			.catch(err => {
 				res.json({
@@ -127,10 +128,6 @@ app.post("/api/users/:id/exercises", (req, res) => {
 				console.log(err);
 			});
 	}
-
-	// res.json({
-	// 	msg: "add exercise success",
-	// });
 });
 
 /**
