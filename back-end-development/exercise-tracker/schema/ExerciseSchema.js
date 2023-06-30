@@ -4,6 +4,7 @@ import { Schema } from "mongoose";
  * @property {string} username
  * @property {string} description
  * @property {number} duration
+ * @property {string} date
  */
 
 /**@type {ExerciseStruct} */
@@ -14,6 +15,7 @@ const ExerciseSchema = Schema({
 	username: String,
 	description: String,
 	duration: Number,
+	date : String
 });
 
 export { ExerciseStruct, ExerciseSchema };
