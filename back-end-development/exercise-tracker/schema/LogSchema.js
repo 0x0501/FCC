@@ -6,6 +6,8 @@ import { LogInfoSchema, LogInfoStruct } from "./LogInfoSchema.js";
  * @property {number} count
  * @property {Array<LogInfoStruct>} log
  * @property {string} _id
+ * @property {string} from
+ * @property {string} to
  */
 
 /**@type {LogStruct} */

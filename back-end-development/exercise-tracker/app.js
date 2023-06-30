@@ -5,7 +5,7 @@ import "dotenv/config";
 import DB from "./Database.js";
 import { UserSchema, UserStruct } from "./schema/UserSchema.js";
 import { ExerciseStruct } from "./schema/ExerciseSchema.js";
-import { LogSchema } from "./schema/LogSchema.js";
+import { LogSchema, LogStruct} from "./schema/LogSchema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -153,7 +153,28 @@ app.get("/api/users/:id/logs", (req, res) => {
 				}
 			};
 
+            const filterLog = (data_arr, from, to, limit) => {
+                const arr = data_arr.filter(record => {
+                    const createdDate = new Date(record.date);
+
+                    if (from !== undefined) {
+                        const fromDateThen = new Date(from);
+                        const toDateThen = new Date(to ?? Date.now());
+                        return createdDate >= fromDateThen && createdDate <= toDateThen;
+                    } else if (result.to !== undefined) {
+                        const toDateThen = new Date();
+                        return createdDate <= toDateThen;
+                    } else {
+                        return true;
+                    }
+                });
+                // if the second param is undefined, it'll work as `slice(0)`
+                return arr.slice(0, limit);
+            }
+
+            /**@type {LogStruct} */
 			const result = {};
+
 			result._id = req.params.id;
 			result.username = data.username;
 
@@ -165,26 +186,12 @@ app.get("/api/users/:id/logs", (req, res) => {
 				result.to = new Date(req.query.to).toDateString();
 			}
 
-			result.log = logs.log.filter(record => {
-				const createdDate = new Date(record.date);
-
-				if (result.from !== undefined) {
-					const from = new Date(result.from);
-					const to = new Date(result.to ?? Date.now());
-					return createdDate >= from && createdDate <= to;
-				} else if (result.to !== undefined) {
-					const to = new Date(result.to);
-					return createdDate <= to;
-				} else {
-					return true;
-				}
-			});
+			result.log = filterLog(logs.log, result.from, result.to, req.query.limit ?? undefined);
             
-
             // count records
 			result.count = result.log.length;
 
-			console.log(result);
+			res.json(result);
 		})
 		.catch(err => {
 			res.json({
