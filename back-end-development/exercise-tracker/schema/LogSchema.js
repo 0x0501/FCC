@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { LogInfoSchema, LogInfoStruct } from "./LogInfoSchema";
+import { LogInfoSchema, LogInfoStruct } from "./LogInfoSchema.js";
 /**
  * @typedef LogStruct
  * @property {string} username

@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 /**
  * @typedef UserStruct
  * @property {string} username
+ * @property {string} _id
  */
 
 /**@type {UserStruct} */
