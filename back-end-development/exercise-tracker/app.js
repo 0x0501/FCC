@@ -134,9 +134,64 @@ app.post("/api/users/:id/exercises", (req, res) => {
  * @description retrieve exercises from database, the query strings (optional) may be `from?`, `to?` or `limit?`
  */
 app.get("/api/users/:id/logs", (req, res) => {
-	res.json({
-		msg: "query logs success",
-	});
+	const User = DB.model("user", UserSchema);
+
+	User.findById(req.params.id)
+		.then(async data => {
+			const Log = DB.model("logs", LogSchema);
+
+			const logs = await Log.findOne({
+				username: data.username,
+			});
+
+			const validator = property => {
+				if (Reflect.get(req.query, property) !== undefined) {
+					const dateTest = new Date(Reflect.get(req.query, property));
+					return !Number.isNaN(dateTest.getTime());
+				} else {
+					return false;
+				}
+			};
+
+			const result = {};
+			result._id = req.params.id;
+			result.username = data.username;
+
+			if (validator("from")) {
+				result.from = new Date(req.query.from).toDateString();
+			}
+
+			if (validator("to")) {
+				result.to = new Date(req.query.to).toDateString();
+			}
+
+			result.log = logs.log.filter(record => {
+				const createdDate = new Date(record.date);
+
+				if (result.from !== undefined) {
+					const from = new Date(result.from);
+					const to = new Date(result.to ?? Date.now());
+					return createdDate >= from && createdDate <= to;
+				} else if (result.to !== undefined) {
+					const to = new Date(result.to);
+					return createdDate <= to;
+				} else {
+					return true;
+				}
+			});
+            
+
+            // count records
+			result.count = result.log.length;
+
+			console.log(result);
+		})
+		.catch(err => {
+			res.json({
+				error: `No user for such id: ${req.params.id}`,
+			});
+			console.log(err);
+		});
 });
 
 app.listen(process.env["EXPRESS_PORT"], () => {
