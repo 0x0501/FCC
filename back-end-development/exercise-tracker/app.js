@@ -5,7 +5,7 @@ import "dotenv/config";
 import DB from "./Database.js";
 import { UserSchema, UserStruct } from "./schema/UserSchema.js";
 import { ExerciseStruct } from "./schema/ExerciseSchema.js";
-import { LogSchema, LogStruct} from "./schema/LogSchema.js";
+import { LogSchema, LogStruct } from "./schema/LogSchema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,6 +15,8 @@ const app = express();
 // middleware for CORS request
 app.use((_req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "content-type");
+	res.setHeader("Access-Control-Allow-Methods", "POST, GET");
 	next();
 });
 
@@ -44,8 +46,6 @@ app.use("/api/users/:id/((logs|exercises))", (req, res, next) => {
 app.post("/api/users", async (req, res) => {
 	const User = DB.model("user", UserSchema);
 
-	console.log(req.body)
-
 	const isExist = await User.findOne({
 		username: req.body.username,
 	});
@@ -54,7 +54,7 @@ app.post("/api/users", async (req, res) => {
 	let queryResult = {};
 
 	// if the user doesn't exist, add a new one
-	if (isExist === null ) {
+	if (isExist === null) {
 		const userInstance = new User({
 			username: req.body.username,
 		});
@@ -74,62 +74,55 @@ app.post("/api/users", async (req, res) => {
 app.post("/api/users/:id/exercises", (req, res) => {
 	const User = DB.model("user", UserSchema);
 
-	if (req.params.id !== req.body.user_id) {
-		res.json({
-			error: `the request user_id params must identical`,
-		});
-	} else {
-		User.findById(req.params.id)
-			.then(async data => {
-				if (data === null) throw new Error(`No such user: ${req.params.id}`);
+	User.findById(req.params.id)
+		.then(async data => {
+			if (data === null) throw new Error(`No such user: ${req.params.id}`);
 
-				const Log = DB.model("logs", LogSchema);
+			const Log = DB.model("logs", LogSchema);
 
-				/**@type {ExerciseStruct} */
-				const exerciseMsg = {
-					description: req.body.desc,
-					duration: req.body.duration,
-					date:
-						req.body.exercise_date === undefined || req.body.exercise_date == ""
-							? new Date().toDateString()
-							: new Date(req.body.exercise_date).toDateString(),
-				};
+			/**@type {ExerciseStruct} */
+			const exerciseMsg = {
+				description: req.body.desc,
+				duration: req.body.duration,
+				date:
+					req.body.exercise_date === undefined || req.body.exercise_date == ""
+						? new Date().toDateString()
+						: new Date(req.body.exercise_date).toDateString(),
+			};
 
-				let isExistInLog = await Log.findOne({ username: data.username });
+			let isExistInLog = await Log.findOne({ username: data.username });
 
-				/**@type {ExerciseStruct}*/
-				let result = {
+			/**@type {ExerciseStruct}*/
+			let result = {
+				username: data.username,
+				_id: data._id.toString(),
+			};
+
+			if (isExistInLog === null) {
+				const LogInstance = new Log({
 					username: data.username,
-					_id: data._id.toString(),
-				};
-
-				if (isExistInLog === null) {
-					const LogInstance = new Log({
-						username: data.username,
-						log: [exerciseMsg],
-					});
-					isExistInLog = await LogInstance.save();
-				} else {
-					// add this exercise to the array
-					isExistInLog.log.push(exerciseMsg);
-				}
-				const actionResult = await isExistInLog.save();
-
-				result.duration =
-					actionResult.log[actionResult.log.length - 1].duration;
-				result.description =
-					actionResult.log[actionResult.log.length - 1].description;
-				result.date = actionResult.log[actionResult.log.length - 1].date;
-
-				res.json(result);
-			})
-			.catch(err => {
-				res.json({
-					error: `No user for such id: ${req.params.id}`,
+					log: [exerciseMsg],
 				});
-				console.log(err);
+				isExistInLog = await LogInstance.save();
+			} else {
+				// add this exercise to the array
+				isExistInLog.log.push(exerciseMsg);
+			}
+			const actionResult = await isExistInLog.save();
+
+			result.duration = actionResult.log[actionResult.log.length - 1].duration;
+			result.description =
+				actionResult.log[actionResult.log.length - 1].description;
+			result.date = actionResult.log[actionResult.log.length - 1].date;
+
+			res.json(result);
+		})
+		.catch(err => {
+			res.json({
+				error: `No user for such id: ${req.params.id}`,
 			});
-	}
+			console.log(err);
+		});
 });
 
 /**
@@ -155,26 +148,26 @@ app.get("/api/users/:id/logs", (req, res) => {
 				}
 			};
 
-            const filterLog = (data_arr, from, to, limit) => {
-                const arr = data_arr.filter(record => {
-                    const createdDate = new Date(record.date);
+			const filterLog = (data_arr, from, to, limit) => {
+				const arr = data_arr.filter(record => {
+					const createdDate = new Date(record.date);
 
-                    if (from !== undefined) {
-                        const fromDateThen = new Date(from);
-                        const toDateThen = new Date(to ?? Date.now());
-                        return createdDate >= fromDateThen && createdDate <= toDateThen;
-                    } else if (result.to !== undefined) {
-                        const toDateThen = new Date();
-                        return createdDate <= toDateThen;
-                    } else {
-                        return true;
-                    }
-                });
-                // if the second param is undefined, it'll work as `slice(0)`
-                return arr.slice(0, limit);
-            }
+					if (from !== undefined) {
+						const fromDateThen = new Date(from);
+						const toDateThen = new Date(to ?? Date.now());
+						return createdDate >= fromDateThen && createdDate <= toDateThen;
+					} else if (result.to !== undefined) {
+						const toDateThen = new Date();
+						return createdDate <= toDateThen;
+					} else {
+						return true;
+					}
+				});
+				// if the second param is undefined, it'll work as `slice(0)`
+				return arr.slice(0, limit);
+			};
 
-            /**@type {LogStruct} */
+			/**@type {LogStruct} */
 			const result = {};
 
 			result._id = req.params.id;
@@ -188,9 +181,14 @@ app.get("/api/users/:id/logs", (req, res) => {
 				result.to = new Date(req.query.to).toDateString();
 			}
 
-			result.log = filterLog(logs.log, result.from, result.to, req.query.limit ?? undefined);
-            
-            // count records
+			result.log = filterLog(
+				logs.log,
+				result.from,
+				result.to,
+				req.query.limit ?? undefined
+			);
+
+			// count records
 			result.count = result.log.length;
 
 			res.json(result);
