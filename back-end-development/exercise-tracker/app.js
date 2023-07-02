@@ -69,6 +69,18 @@ app.post("/api/users", async (req, res) => {
 });
 
 /**
+ * @description Get all the users
+ */
+app.get("/api/users/", async (req, res) => {
+	const User = DB.model("user", UserSchema);
+	const result = (await User.find()).map(record => ({
+		_id : record._id.toString(),
+		username : record.username
+	}))
+	res.json(result);
+})
+
+/**
  * @description add exercise of id indicated user into database
  */
 app.post("/api/users/:id/exercises", (req, res) => {
