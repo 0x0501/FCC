@@ -82,12 +82,12 @@ app.post("/api/users/:id/exercises", (req, res) => {
 
 			/**@type {ExerciseStruct} */
 			const exerciseMsg = {
-				description: req.body.desc,
+				description: req.body.description,
 				duration: req.body.duration,
 				date:
-					req.body.exercise_date === undefined || req.body.exercise_date == ""
+					req.body.date === undefined || req.body.date == ""
 						? new Date().toDateString()
-						: new Date(req.body.exercise_date).toDateString(),
+						: new Date(req.body.date).toDateString(),
 			};
 
 			let isExistInLog = await Log.findOne({ username: data.username });
