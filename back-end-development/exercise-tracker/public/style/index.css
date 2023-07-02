@@ -27,11 +27,19 @@ body {
     border-radius: 4px;
 }
 
+.wrapper {
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .result {
     margin: 5px;
     padding: 10px;
     border-radius: 4px;
     background-color: var(--gray);
+    word-break: break-all;
 }
 
 .form-group h2,

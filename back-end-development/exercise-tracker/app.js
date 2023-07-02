@@ -44,6 +44,8 @@ app.use("/api/users/:id/((logs|exercises))", (req, res, next) => {
 app.post("/api/users", async (req, res) => {
 	const User = DB.model("user", UserSchema);
 
+	console.log(req.body)
+
 	const isExist = await User.findOne({
 		username: req.body.username,
 	});
@@ -52,7 +54,7 @@ app.post("/api/users", async (req, res) => {
 	let queryResult = {};
 
 	// if the user doesn't exist, add a new one
-	if (isExist === null) {
+	if (isExist === null ) {
 		const userInstance = new User({
 			username: req.body.username,
 		});
