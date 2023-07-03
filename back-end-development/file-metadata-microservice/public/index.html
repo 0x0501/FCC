@@ -1,0 +1,27 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/index.css">
+    <title>File Metadata Microservice</title>
+</head>
+<body>
+    <div id="root">
+        <h1>File Metadata Microservice</h1>
+        <div class="wrapper">
+            <form enctype="multipart/form-data">
+                <label>
+                    Please upload a file:
+                    <input type="file" name="upfile" required>
+                </label>
+                <input class="btn" type="submit" value="UPLOAD">
+            </form>
+            <div class="result hidden">
+                <h2>File Info</h2>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <script src="/js/index.js"></script>
+</body>
+</html>
