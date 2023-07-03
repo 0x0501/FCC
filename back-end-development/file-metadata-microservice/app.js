@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 app.use(express.static(resolve(__dirname, "public")));
 
 
-app.post("/api/upload", uploadConfig.single("upfile"), (req, res) => {
+app.post("/api/fileanalyse", uploadConfig.single("upfile"), (req, res) => {
 	res.json({
 		name: req.file.originalname,
 		type: req.file.mimetype,

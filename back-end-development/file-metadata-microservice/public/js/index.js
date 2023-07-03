@@ -8,7 +8,7 @@
 		/**@type {FormData} */
 		const formData = new FormData(Form);
 
-		fetch("/api/upload", {
+		fetch("/api/fileanalyse", {
 			method: "POST",
 			body: formData,
 		})
