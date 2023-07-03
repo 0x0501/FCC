@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/index.css">
+    <title>Exercise Tracker</title>
+</head>
+<body>
+    <div id="root">
+        <h1>Exercise Tracker</h1>
+        <div class="wrapper">
+            <div class="panel">
+                <form class="form-group">
+                    <h2>Create a new user</h2>
+                    <p class="hint">POST /api/users [username]</p>
+                    <label>
+                        <span>Username</span>:
+                        <input type="text" placeholder="username" name="username" required>
+                    </label>
+                    <input class="btn" type="submit" value="Add User">
+                </form>
+                <form class="form-group">
+                    <h2>Add exercises</h2>
+                    <p class="hint">POST /api/users/:id/exercises</p>
+                    <label>
+                        <span>ID</span>:
+                        <input type="text" placeholder="user id (_id)" name="user_id" required>
+                    </label>
+                    <Label>
+                        <span>Description</span>:
+                        <input type="text" placeholder="description" name="description" required>
+                    </Label>
+                    <label>
+                        <span>Duration</span>:
+                        <input type="number" min="0" placeholder="duration (mins)" name="duration" required>
+                    </label>
+                    <label>
+                        <span>Date</span>:
+                        <input type="date" placeholder="date" name="date">
+                    </label>
+                    <input class="btn" type="submit" value="Add Exercise">
+                </form>
+                <form class="form-group">
+                    <h2>Get user's exercises log</h2>
+                    <p class="hint">POST /api/users/:id/logs?[from][to][limit]</p>
+                    <label>
+                        <span>ID</span>:
+                        <input type="text" placeholder="user_id (_id)" name="user_id" required>
+                    </label>
+                    <label>
+                        From:
+                        <input type="date" placeholder="Date (from)" name="date_from">
+                    </label>
+                    <label>
+                        To:
+                        <input type="date" placeholder="Date (to)" name="date_to">
+                    </label>
+                    <label>
+                        Limit:
+                        <input type="number" min="1" placeholder="limitation" name="limit">
+                    </label>
+                    <input class="btn" type="submit" value="Get Logs">
+                </form>
+            </div>
+            <div class="result hidden">
+                <h2>Response</h2>
+                <p class="response"></p>
+            </div>
+        </div>
+    </div>
+    <script src="/js/index.js"></script>
+</body>
+</html>
