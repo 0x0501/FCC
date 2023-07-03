@@ -1,12 +1,12 @@
 (function (Form) {
-	/**@type {FormData} */
-	const formData = new FormData(Form);
-
 	const responseArea = document.querySelector(".result");
 	const responseInfo = document.querySelector(".result p");
 
 	Form.addEventListener("submit", env => {
 		env.preventDefault();
+
+		/**@type {FormData} */
+		const formData = new FormData(Form);
 
 		fetch("/api/upload", {
 			method: "POST",
